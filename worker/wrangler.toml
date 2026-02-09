@@ -1,0 +1,14 @@
+name = "claw-ai-stuff-worker"
+main = "_worker.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+# 管理后台登录密码
+ADMIN = "change_me_admin_password"
+# 可选：订阅密钥
+KEY = "change_me_key"
+
+[[kv_namespaces]]
+# 节点/用户配置存储
+binding = "KV"
+id = "change_me_in_dashboard"

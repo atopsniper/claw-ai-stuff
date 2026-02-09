@@ -15,7 +15,7 @@
 - Cloudflare Workers / Pages 一键部署脚本
 - 简洁后台：左侧菜单 + 几个基础页面（用户 / 节点 / 订阅 / 系统设置）
 
-## 部署方式（规划中）
+## 部署方式（Workers 第一版草稿）
 
 ### 1. 使用 Cloudflare Workers 部署
 
