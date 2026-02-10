@@ -15,6 +15,14 @@
 - Cloudflare Workers / Pages 一键部署脚本
 - 简洁后台：左侧菜单 + 几个基础页面（用户 / 节点 / 订阅 / 系统设置）
 
+## 文档与架构说明
+
+- `docs-arch.md`：基于 edgetunnel `_worker.js` 拆出来的整体架构草案，帮助你看懂请求流程、KV 结构、订阅 & 代理逻辑。
+
+后续会继续补充：
+- Cloudflare Workers 部署文档（命令 + 截图占位）
+- 与上游 `_worker.js` 协作 / 更新说明
+
 ## 部署方式（Workers 第一版草稿）
 
 ### 1. 使用 Cloudflare Workers 部署
