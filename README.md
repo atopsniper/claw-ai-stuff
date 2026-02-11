@@ -23,21 +23,33 @@
 - Cloudflare Workers 部署文档（命令 + 截图占位）
 - 与上游 `_worker.js` 协作 / 更新说明
 
-## 部署方式（Workers 第一版草稿）
+## 部署方式（Workers 最小可跑版本）
 
 ### 1. 使用 Cloudflare Workers 部署
 
 > 适合已经安装好 `wrangler` 并熟悉命令行的用户。
 
-大致步骤：
+大致步骤（最小可跑）：
 
 1. Fork 本仓库或下载源码
-2. 在 Cloudflare 创建 Worker 项目
-3. 配置环境变量（ADMIN、KEY 等）
-4. 绑定 KV 命名空间
-5. 部署并绑定自定义域
+2. 本地安装 `wrangler`（或者用 `deploy-worker.sh` 脚本自动安装）
+3. 在 `worker/wrangler.toml` 里：
+   - 修改 `name` 为你在 Cloudflare 上想要的 Worker 名
+   - 在 Cloudflare Dashboard 创建 KV 命名空间，并把 `id` 填到 `[[kv_namespaces]]` 里
+   - 修改 `ADMIN` / `KEY` 为你自己的密码 / 密钥
+4. 在项目根目录执行：
 
-详细命令与截图教程会在完成后补充到这里。
+   ```bash
+   ./deploy-worker.sh
+   ```
+
+   首次部署会：
+   - 检查是否安装 `wrangler`
+   - 在 `worker/` 目录下执行 `wrangler deploy`
+
+5. 在 Cloudflare Dashboard 里给这个 Worker 绑定自定义域名（可选）
+
+> 当前 `_worker.js` 只是一个占位版本：返回简单的“worker is running” 文本，用于验证部署链路是否正常。后续会逐步替换为基于 edgetunnel 的完整逻辑。
 
 ### 2. 使用 Cloudflare Pages 部署
 
