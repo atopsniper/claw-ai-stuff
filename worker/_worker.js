@@ -1,7 +1,8 @@
 // Minimal worker for claw-ai-stuff
 // P0: basic routing + simple ADMIN awareness
 
-const VERSION = "0.1.1";
+const VERSION = "0.1.2";
+const CONFIG_KEY = "config.json";
 
 function jsonResponse(data, init = {}) {
   return new Response(JSON.stringify(data, null, 2), {
@@ -36,7 +37,7 @@ function htmlResponse(html, init = {}) {
   });
 }
 
-function getBasicInfo(env, url) {
+function getBasicInfo(env, url, configStatus) {
   const hasAdmin = Boolean(env.ADMIN && String(env.ADMIN).length > 0);
   const hasKv = Boolean(env.KV);
 
@@ -46,6 +47,7 @@ function getBasicInfo(env, url) {
     url: url.origin,
     hasAdmin,
     hasKv,
+    configStatus,
     // 只暴露是否存在，不暴露具体值
     env: {
       ADMIN: hasAdmin ? "configured" : "missing",
@@ -54,12 +56,36 @@ function getBasicInfo(env, url) {
   };
 }
 
-function handleHttp(request, env, url) {
+async function loadConfig(env) {
+  if (!env.KV) {
+    return { config: null, status: "kv-unbound" };
+  }
+
+  try {
+    const raw = await env.KV.get(CONFIG_KEY);
+    if (!raw) {
+      const def = {
+        version: VERSION,
+        createdAt: new Date().toISOString(),
+        notes: "default config placeholder; replace with real fields later",
+      };
+      await env.KV.put(CONFIG_KEY, JSON.stringify(def));
+      return { config: def, status: "created" };
+    }
+    const parsed = JSON.parse(raw);
+    return { config: parsed, status: "ok" };
+  } catch (err) {
+    return { config: null, status: "error" };
+  }
+}
+
+async function handleHttp(request, env, url) {
   const { pathname } = url;
+  const { status: configStatus } = await loadConfig(env);
 
   if (request.method === "GET") {
     if (pathname === "/" || pathname === "") {
-      const info = getBasicInfo(env, url);
+      const info = getBasicInfo(env, url, configStatus);
       const html = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -89,6 +115,9 @@ function handleHttp(request, env, url) {
     <span class="tag ${info.hasKv ? "ok" : "warn"}">
       KV: ${info.hasKv ? "bound" : "unbound"}
     </span>
+    <span class="tag ${info.configStatus === "ok" || info.configStatus === "created" ? "ok" : "warn"}">
+      config: ${info.configStatus || "unknown"}
+    </span>
   </p>
 
   <h2>Useful endpoints</h2>
@@ -103,12 +132,23 @@ function handleHttp(request, env, url) {
     }
 
     if (pathname === "/health") {
-      const info = getBasicInfo(env, url);
+      const info = getBasicInfo(env, url, configStatus);
       return jsonResponse({ ok: true, name: info.name, version: info.version });
     }
 
     if (pathname === "/info") {
-      return jsonResponse(getBasicInfo(env, url));
+      const { config, status } = await loadConfig(env);
+      return jsonResponse({
+        ...getBasicInfo(env, url, status),
+        configStatus: status,
+        // 不直接暴露完整 config 内容，只给个简化摘要
+        configPreview: config
+          ? {
+              version: config.version,
+              createdAt: config.createdAt,
+            }
+          : null,
+      });
     }
 
     if (pathname === "/ws-test") {
