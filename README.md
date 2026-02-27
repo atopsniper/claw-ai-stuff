@@ -2,6 +2,8 @@
 
 ## edgetunnel admin UI（美化版）
 
+- 快速部署教程：见 [`DEPLOY.md`](./DEPLOY.md)
+
 本仓库 vendoring 了上游 `cmliu/edgetunnel`，并提供一套更漂亮的后台静态页面（用于 Worker 里 `Pages静态页面` 拉取的 `/admin`、`/login` 等页面）。
 
 - 静态页面路径：`/docs/*`
