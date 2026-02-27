@@ -1,5 +1,23 @@
 # claw-ai-stuff
 
+## edgetunnel admin UI（美化版）
+
+本仓库 vendoring 了上游 `cmliu/edgetunnel`，并提供一套更漂亮的后台静态页面（用于 Worker 里 `Pages静态页面` 拉取的 `/admin`、`/login` 等页面）。
+
+- 静态页面路径：`/docs/*`
+- GitHub Pages 建议设置：**Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `main` / Folder: `/docs`**
+- Pages 生效后，你的页面基址通常是：`https://atopsniper.github.io/claw-ai-stuff`
+
+对应地，Worker 代码里已经把：
+
+```js
+const Pages静态页面 = 'https://atopsniper.github.io/claw-ai-stuff';
+```
+
+你部署到 Cloudflare 后：
+- 登录页：`https://<你的域名>/login`
+- 后台：`https://<你的域名>/admin`
+
 基于 Cloudflare Workers / Pages 的 VLESS + Trojan 节点面板，目标是：
 
 - **部署更傻瓜**：一键脚本 / 最少操作完成 Workers / Pages 部署
